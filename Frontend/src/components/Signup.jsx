@@ -1,65 +1,9 @@
-// import React from 'react'
-// import { Link } from 'react-router-dom'
-// import Login from './Login'
-
-
-
-// function Signup() {
-//      const {
-//             register,
-//             handleSubmit,
-//             formState: { errors },
-//         } = useForm();
-    
-//         // Function to handle form submission
-//         const onSubmit = (data) => {
-//             console.log(data);
-//             // alert("Form Submitted! ✅ Check console.");
-//         };
-//   return (
-// <>
-
-// <div className='flex flex-col items-center justify-center min-h-screen bg-gray-10 border-[5px] shadow-md'>
-// <h3 className='font-bold text-lg'>Sign up</h3>
-//     {/* Name */}
-//     <div className='mt-4 space-y-2'> 
-//         <span>Name</span> <br />
-//         <input type="text" placeholder='Enter your Full Name' className='w-80 px-3 py-1 border rounded-md outline-none'  />
-//     </div>
-//     {/* Email */}
-//     <div className='mt-4 space-y-2'> 
-//         <span>Email</span> <br />
-//         <input type="email" placeholder='Enter your email here' className='w-80 px-3 py-1 border rounded-md outline-none'  />
-//     </div>
-//     {/* Password */}
-//     <div className='mt-4 space-y-2'>
-//         <span>Password</span> <br />
-//         <input type="text" placeholder='Enter your password here' className='w-80 px-3 py-1 border rounded-md outline-none'  />
-//     </div>
-//     {/* Button */}
-//     <div className='flex space-x-12 mt-4'>
-//     <button className='bg-pink-500 text-white rounded-md px-3 py-1 hover:bg-pink-700 duration-200'>Signup</button>
-//     <p className='ml-10'>Have Account? {""}
-//         <button  className='underline text-blue-500 cursor-pointer'
-//         onClick={()=>
-//             document.getElementById("my_modal_3").showModal()
-//         }
-//         ></button> </p>
-
-//         <Login/>
-//     </div>
-    
-//     </div>
-// </>
-// )
-// }
-
-// export default Signup
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import Login from './Login';
+import axios from 'axios'
+import toast from 'react-hot-toast';
 
 function Signup() {
     const {
@@ -69,9 +13,32 @@ function Signup() {
     } = useForm();
 
     // Function to handle form submission
-    const onSubmit = (data) => {
-        console.log("Signup Successful ✅", data);
-        alert("Signup Successful ✅ Check console.");
+    const onSubmit =async (data) => {
+        // console.log("Signup Successful ✅", data);
+        // alert("Signup Successful ✅ Check console.");
+        const userInfo = {
+            fullname: data.fullname,
+            email: data.email,
+            password: data.password,
+        }
+       await axios.post("http://localhost:4001/user/signup",userInfo)
+        .then((res)=>{
+            console.log(res.data)
+            if(res.data){
+                // alert("Signup Successfull")
+                toast.success('Signup Successfull');
+                
+            }
+            localStorage.setItem("Users",JSON.stringify(res.data.user));
+        })
+        .catch((err)=>{
+                        
+            if(err.response){
+                console.log(err)
+            toast.error("Error:"+err.response.data.message)
+
+            }
+        })
     };
 
     return (
@@ -88,9 +55,9 @@ function Signup() {
                             type="text"
                             placeholder="Enter your Full Name"
                             className="w-80 px-3 py-1 border rounded-md outline-none"
-                            {...register("name", { required: "Name is required" })}
+                            {...register("fullname", { required: "Name is required" })}
                         />
-                        {errors.name && <p className="text-red-500">{errors.name.message}</p>}
+                        {errors.fullname && <p className="text-red-500">{errors.name.message}</p>}
                     </div>
 
                     {/* Email Field */}
